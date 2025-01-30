@@ -2,6 +2,7 @@ package com.company.inventorySystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import com.company.inventorySystem.model.Category;
 import com.company.inventorySystem.response.CategoryResponseRest;
 import com.company.inventorySystem.services.ICategoryService;
 
+@CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
 @RequestMapping("/api/v1")
 public class CategoryRestController {
@@ -72,6 +74,11 @@ public class CategoryRestController {
 		
 	}
 	
+	/**
+	 * Eliminar cateegoria
+	 * @param id
+	 * @return
+	 */
 	@DeleteMapping("/categories/{id}")
 	public ResponseEntity<CategoryResponseRest> deleteCategory(@PathVariable Long id){
 		ResponseEntity<CategoryResponseRest> respose = service.deleteCategory(id);
