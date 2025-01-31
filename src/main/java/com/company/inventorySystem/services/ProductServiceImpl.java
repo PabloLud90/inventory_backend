@@ -12,7 +12,6 @@ import com.company.inventorySystem.dao.ICategoryDao;
 import com.company.inventorySystem.dao.IProductDao;
 import com.company.inventorySystem.model.Category;
 import com.company.inventorySystem.model.Product;
-import com.company.inventorySystem.response.CategoryResponseRest;
 import com.company.inventorySystem.response.ProductResponseRest;
 import com.company.inventorySystem.util.Util;
 
@@ -102,6 +101,48 @@ public class ProductServiceImpl implements IProductService {
 			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ResponseEntity<ProductResponseRest> searchByName(String name) {
+		ProductResponseRest response = new ProductResponseRest();
+		List<Product> lista = new ArrayList<>();
+		List<Product> listaAux = new ArrayList<>();
+		
+		try {
+			//Buscar por nombre del producto
+			listaAux = productDao.findByNameContainingIgnoreCase(name);
+			
+			if(listaAux.size() > 0) {
+				
+				//programacion funcional
+				listaAux.stream().forEach((p) -> {
+					byte[] imagenDescompress = Util.decompressZLib(p.getPicture());
+					p.setPicture(imagenDescompress);
+					lista.add(p);
+				});
+				
+				response.getProductResponse().setProducts(lista);
+				response.setMetadata("Respuesta Ok", "00", "Producto encontrado");
+				
+				
+			}else {
+				response.setMetadata("Respuesta no Ok", "-1", "Producto no encontrado");
+				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+				
+			}
+				
+			
+		} catch (Exception e) {
+			response.setMetadata("Respuesta no Ok", "-1", "Error al consultar por nombre");
+			e.getStackTrace();
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+		
 	}
 	
 
