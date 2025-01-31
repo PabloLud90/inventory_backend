@@ -12,6 +12,7 @@ import com.company.inventorySystem.dao.ICategoryDao;
 import com.company.inventorySystem.dao.IProductDao;
 import com.company.inventorySystem.model.Category;
 import com.company.inventorySystem.model.Product;
+import com.company.inventorySystem.response.CategoryResponseRest;
 import com.company.inventorySystem.response.ProductResponseRest;
 import com.company.inventorySystem.util.Util;
 
@@ -143,6 +144,30 @@ public class ProductServiceImpl implements IProductService {
 
 		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
 		
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<ProductResponseRest> deleteProduct(Long id) {
+		
+		ProductResponseRest response = new ProductResponseRest();
+		
+		try {
+			//eliminar por ID
+			productDao.deleteById(id);
+			response.setMetadata("Respuesta Ok", "00", "Producto eliminado correctamente");
+			
+
+		} catch (Exception e) {
+			e.getStackTrace();
+			response.setMetadata("Respuesta no Ok", "-1", "Error al eliminar el producto");
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+		
+
 	}
 	
 
