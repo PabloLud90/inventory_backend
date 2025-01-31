@@ -12,7 +12,6 @@ import com.company.inventorySystem.dao.ICategoryDao;
 import com.company.inventorySystem.dao.IProductDao;
 import com.company.inventorySystem.model.Category;
 import com.company.inventorySystem.model.Product;
-import com.company.inventorySystem.response.CategoryResponseRest;
 import com.company.inventorySystem.response.ProductResponseRest;
 import com.company.inventorySystem.util.Util;
 
@@ -86,7 +85,6 @@ public class ProductServiceImpl implements IProductService {
 				//se descomprime la imagen para presentar al cliente y por ultimo se agrega a lista prducto
 				byte[] imagenDescompress = Util.decompressZLib(product.get().getPicture());
 				product.get().setPicture(imagenDescompress);
-				
 				lista.add(product.get());
 				response.getProductResponse().setProducts(lista);
 				response.setMetadata("Respuesta Ok", "00", "Producto encontrado");
@@ -147,7 +145,7 @@ public class ProductServiceImpl implements IProductService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<ProductResponseRest> deleteProduct(Long id) {
 		
 		ProductResponseRest response = new ProductResponseRest();
@@ -168,6 +166,46 @@ public class ProductServiceImpl implements IProductService {
 		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
 		
 
+	}
+
+	@Override
+	public ResponseEntity<ProductResponseRest> search() {
+		ProductResponseRest response = new ProductResponseRest();
+		List<Product> lista = new ArrayList<>();
+		List<Product> listaAux = new ArrayList<>();
+		
+		try {
+			//Buscar por nombre del producto
+			listaAux = (List<Product>) productDao.findAll();
+			
+			if(listaAux.size() > 0) {
+				
+				//programacion funcional
+				listaAux.stream().forEach((p) -> {
+					byte[] imagenDescompress = Util.decompressZLib(p.getPicture());
+					p.setPicture(imagenDescompress);
+					lista.add(p);
+				});
+				
+				response.getProductResponse().setProducts(lista);
+				response.setMetadata("Respuesta Ok", "00", "Productos encontrado");
+				
+				
+			}else {
+				response.setMetadata("Respuesta no Ok", "-1", "Productos no encontrado");
+				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+				
+			}
+		
+		} catch (Exception e) {
+
+			response.setMetadata("Respuesta no Ok", "-1", "Error al consultar");
+			e.getStackTrace();
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
 	}
 	
 

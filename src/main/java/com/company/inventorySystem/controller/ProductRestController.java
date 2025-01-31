@@ -101,5 +101,19 @@ public class ProductRestController {
 		 return response;
 	}
 	
+	
+	/**
+	 * Buscar todos los productos
+	 * @param name
+	 * @return
+	 */
+	@GetMapping("/products")
+	public ResponseEntity<ProductResponseRest> search() {
+		 ResponseEntity<ProductResponseRest> response = service.search();	
+	
+		 return response;
+	}
+	
+	
 
 }
