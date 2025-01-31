@@ -46,6 +46,7 @@ public class CategoryServiceImpl implements ICategoryService {
 	public ResponseEntity<CategoryResponseRest> searchById(Long id) {
 		
 		CategoryResponseRest response = new CategoryResponseRest();
+		
 		List<Category> list = new ArrayList<>();
 		try {
 	
